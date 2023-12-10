@@ -15,7 +15,7 @@ class UserController
     private UsersRepository $usersRepository;
 
     public function __construct(
-        User $user,
+        User            $user,
         UsersRepository $userRepo
     )
     {
@@ -50,7 +50,13 @@ class UserController
         return in_array($this->user->id, GeneralConfigurations::ADMINS);
     }
 
-    public function getId() {
+    public function getId(): int
+    {
         return $this->user->id;
+    }
+
+    public function getName(): string
+    {
+        return $this->user->first_name;
     }
 }

@@ -16,7 +16,7 @@ class PhotoShopController
     public function init(): void
     {
         if (isset($_GET['sourceImage'])) {
-            $this->sourceImage = $_GET['sourceImage'];
+            $this->sourceImage = rawurldecode($_GET['sourceImage']);
         }
     }
 

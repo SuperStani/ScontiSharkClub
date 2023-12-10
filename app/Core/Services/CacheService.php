@@ -26,7 +26,8 @@ class CacheService
         try {
             $this->redisController->setKey($key, $value, $expire_time);
         } catch (Exception $e) {
-
+            $this->logger->warning("Redis set key error", $e->getMessage());
+            return false;
         }
     }
 
