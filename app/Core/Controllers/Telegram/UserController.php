@@ -5,7 +5,7 @@ namespace App\Core\Controllers\Telegram;
 use App\Configs\GeneralConfigurations;
 use App\Core\ORM\Entities\UserEntity;
 use App\Core\ORM\Repositories\UsersRepository;
-use App\Integration\Telegram\Enums\User;
+use App\Integrations\Telegram\Enums\User;
 use Exception;
 
 
@@ -48,5 +48,9 @@ class UserController
     public function isAdmin(): bool
     {
         return in_array($this->user->id, GeneralConfigurations::ADMINS);
+    }
+
+    public function getId() {
+        return $this->user->id;
     }
 }

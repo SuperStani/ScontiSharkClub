@@ -21,14 +21,13 @@ class CommandsController extends MessageController
 
     public function start($param = null): ?array
     {
-        $this->user->save();
         if (!$param) {
-            $this->user->page();
             if ($this->user->isAdmin()) {
                 $menu[] = [["text" => "TEST ADMIN", "callback_data" => "Post:new"]];
             }
             $menu[] = [["text" => "TEST USER", "callback_data" => "Post:new"]];
             $text = "Test message";
+            $this->logger->debug($text);;
             return $this->message->reply($text, $menu);
         } else {
             $param = explode("_", $param);

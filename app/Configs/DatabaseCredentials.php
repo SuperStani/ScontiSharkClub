@@ -8,9 +8,9 @@ interface DatabaseCredentials
 
     public const PORT = 3306;
 
-    public const USER = "";
+    public const USER = "admin";
 
-    public const PASSWORD = "";
+    public const PASSWORD = "@Naruto96";
 
-    public const DATABASE = "";
+    public const DATABASE = "ScontiSharkClub";
 }

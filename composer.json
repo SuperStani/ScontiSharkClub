@@ -28,9 +28,10 @@
     "process-timeout": 3600
   },
   "require": {
-    "php-di/php-di": "^6.4",
     "ext-json": "*",
+    "ext-pdo": "*",
     "guzzlehttp/guzzle": "^7.0",
-    "ext-pdo": "*"
+    "intervention/image": "^2.7",
+    "php-di/php-di": "^6.4"
   }
 }

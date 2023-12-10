@@ -2,12 +2,14 @@
 
 namespace App\Integrations\Telegram\Enums;
 
+use App\Core\Logger\LoggerInterface;
 use App\Integrations\Telegram\Enums\Types\UpdateType;
 use App\Integrations\Telegram\TelegramClient;
 
 class Message
 {
     public int $id;
+
     public ?string $text;
     public Chat $chat;
     public ?Photo $photo;
@@ -15,11 +17,10 @@ class Message
 
     public function __construct(Update $update)
     {
-        $data = $update->getType() == UpdateType::MESSAGE ? $update->getData()->message : $update->getData()->callback_data;
-
+        $data = $update->getType() == UpdateType::MESSAGE ? $update->getData()->message : $update->getData()->callback_query->message;
         $this->id = $data->message_id;
         $this->text = $data->text ?? null;
-        $this->chat = new Chat($data->chat->id, $data->chat->first_name, $data->chat->username ?? null, $data->chat->type);
+        $this->chat = new Chat($data->chat->id, $data->chat->first_name ?? $data->chat->title, $data->chat->username ?? null, $data->chat->type);
         $this->video = isset($data->video) ?
             new Video(
                 $data->video->file_id,

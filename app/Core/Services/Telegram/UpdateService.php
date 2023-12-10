@@ -4,6 +4,7 @@
 namespace App\Core\Services\Telegram;
 
 
+use App\Configs\GeneralConfigurations;
 use App\Integrations\Telegram\Enums\Update;
 
 class UpdateService
@@ -11,7 +12,7 @@ class UpdateService
 
     public static function get(): ?Update
     {
-        if (($update = WebAppService::getUpdateFromWebApp()) === false) {
+        if (!GeneralConfigurations::WEBAPP_ACTIVE || ($update = WebAppService::getUpdateFromWebApp()) === false) {
             return new Update(json_decode(file_get_contents("php://input")));
         }
         return $update;

@@ -10,7 +10,7 @@ abstract class Controller
     protected LoggerInterface $logger;
 
     public function __construct(
-        UserController $user,
+        UserController  $user,
         LoggerInterface $logger
     )
     {
