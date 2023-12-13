@@ -14,6 +14,7 @@ class Message
     public Chat $chat;
     public ?Photo $photo;
     public ?Video $video;
+    public ?array $new_chat_members;
 
     public function __construct(Update $update)
     {
@@ -34,7 +35,7 @@ class Message
             ) : null;
         $this->photo = isset($data->photo) ?
             new Photo() : null;
-        $message = null;
+        $this->new_chat_members = $data->new_chat_members ?? null;
     }
 
     public function reply(string $text, $menu = null, $parse = "Markdown", bool $disable_preview = false, $reply_to_message = null): ?array

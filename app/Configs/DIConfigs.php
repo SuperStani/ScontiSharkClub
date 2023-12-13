@@ -1,14 +1,18 @@
 <?php
 
 use App\Configs\DatabaseCredentials;
+use App\Configs\GeneralConfigurations;
 use App\Configs\RedisConfigurations;
 use App\Core\Controllers\Cache\RedisController;
 use App\Core\Logger\Logger;
 use App\Core\Logger\LoggerInterface;
 use App\Core\ORM\DB;
 use App\Core\Services\Telegram\UpdateService;
+use App\Integrations\Amazon\AmazonInterface;
+use App\Integrations\Amazon\Keepa\Keepa;
 use App\Integrations\Telegram\Enums\Update;
 use DI\ContainerBuilder;
+use Keepa\KeepaAPI;
 use Psr\Container\ContainerInterface;
 use function DI\factory;
 
@@ -36,6 +40,13 @@ $conf = [
     }),
     Update::class => factory(function () {
         return UpdateService::get();
+    }),
+    KeepaAPI::class => factory(function () {
+        return new KeepaAPI(GeneralConfigurations::KEEPA_API_ACCESS_KEY);
+    }),
+    AmazonInterface::class => factory(function (ContainerInterface $c) {
+        //return $c->get(AmazonPaapi::class);
+        return $c->get(Keepa::class);
     })
 ];
 

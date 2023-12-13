@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Integrations\AmazonPaapi\Enums;
+namespace App\Integrations\Amazon;
 
 class AmazonProduct
 {

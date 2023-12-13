@@ -30,8 +30,10 @@
   "require": {
     "ext-json": "*",
     "ext-pdo": "*",
+    "ext-curl": "*",
     "guzzlehttp/guzzle": "^7.0",
     "intervention/image": "^2.7",
+    "keepa/php_api": "*",
     "php-di/php-di": "^6.4"
   }
 }

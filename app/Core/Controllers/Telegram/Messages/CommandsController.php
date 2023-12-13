@@ -50,15 +50,15 @@ class CommandsController extends MessageController
         }
     }
 
-    public function setwelcome(string $message)
+    public function setwelcome(...$args): void
     {
-
+        $this->cacheService->setKey(GeneralConfigurations::WELCOME_MESSAGE_CACHE_KEY, str_replace("/setwelcome ", "", $this->message->text));
+        $this->message->delete();
     }
 
-    public function setrank(string $message = ''): void
+    public function setrank(...$args): void
     {
-        $this->cacheService->setKey(GeneralConfigurations::RANKING_ADDING_TEXT_CACHE_KEY, $message);
-        $this->message->reply($message);
+        $this->cacheService->setKey(GeneralConfigurations::RANKING_ADDING_TEXT_CACHE_KEY, str_replace("/setrank ", "", $this->message->text));
         $this->message->delete();
     }
 

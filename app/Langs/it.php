@@ -18,8 +18,12 @@ $it = [
         "🔗 %s",
         "📲 <a href='%s'>Apri con l’App Amazon</a>",
         "",
-        "✏️ | <i>Segnalata da <a href='tg://user?id=%s'>%s</a></i>",
+        "✏️ | <i>Segnalata da %s</i>",
         "✨ | <b><i>Vota questa segnalazione</i></b> 👇"
+    ],
+    "product_admin_notification" => [
+        "%s",
+        "✏️ | <i>Segnalata da <a href='tg://user?id=%s'>%s</a></i>"
     ],
     "price_template_1" => "A soli <b>%s€</b>",
     "price_template_2" => "<b>%s€</b> anzichè %s€ (<b>-%s</b>)",

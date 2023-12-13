@@ -2,31 +2,31 @@
 
 namespace App\Core\Services\Amazon;
 
-use App\Integrations\AmazonPaapi\Enums\AmazonProduct;
-use App\Integrations\Telegram\TelegramClient;
+use App\Integrations\Amazon\AmazonInterface;
+use App\Integrations\Amazon\AmazonProduct;
 
 class AmazonService
 {
-    private static string $commandPath = "python3 /scripts/ScontiSharkClub/app/Integrations/AmazonPaapi/amazonScraper.py";
 
-    public static function getProductInfo(string $url): ?AmazonProduct
+    private AmazonInterface $amazon;
+
+    public function __construct(AmazonInterface $amazon)
     {
-        $res = shell_exec(self::$commandPath . " \"$url\"");
-        if ($res == '')
-            return null;
-        $data = json_decode($res, true);
-        return new AmazonProduct(
-            $data['title'],
-            $data['url'],
-            $data['actualPrice'],
-            $data['lowerPrice'],
-            $data['highestPrice'],
-            $data['photo']
-        );
+        $this->amazon = $amazon;
     }
 
-    public static function validateUrl(string $url): bool
+    public function getProductInfo(string $url): ?AmazonProduct
     {
-        return strstr($url, "amazon") || strstr($url, "amzn");
+        return $this->amazon->getProductInfo($url);
+    }
+
+    public function validateUrl(string $url): bool
+    {
+        return $this->amazon->validateUrl($url);
+    }
+
+    public function extractAsin(string $url)
+    {
+
     }
 }

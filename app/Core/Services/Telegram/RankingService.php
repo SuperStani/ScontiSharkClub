@@ -26,9 +26,10 @@ class RankingService
         $adding_text = $this->cacheService->getKey(GeneralConfigurations::RANKING_ADDING_TEXT_CACHE_KEY);
         $users = $this->scoreRepository->getTopOfWeek();
         $text = "";
-        $i = 1;
+        $i = 0;
+        $emoji = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣"];
         foreach ($users as $user) {
-            $text .= "[ $i ] : " . TelegramClient::getChat($user['user_id'])['result']['first_name'] . " (" . $user['total_score'] . ")\n";
+            $text .= "$emoji[$i] : " . TelegramClient::getChat($user['user_id'])['result']['first_name'] . " (" . $user['total_score'] . ")\n";
             $i++;
         }
         $text = get_string(LanguageCode::IT, "ranking", $text, $adding_text);
