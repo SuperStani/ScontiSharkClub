@@ -1,1 +1,1 @@
-# TelegramBotBase with love by SuperStani
+# Amazon product scraper telegram bot
