@@ -12,6 +12,7 @@ use App\Core\ORM\Entities\ProductEntity;
 use App\Core\ORM\Repositories\ProductsRepository;
 use App\Core\Services\Amazon\AmazonService;
 use App\Core\Services\CacheService;
+use App\Integrations\Bitly\BitlyAPI;
 use App\Integrations\Telegram\Enums\Message;
 use App\Integrations\Telegram\TelegramClient;
 
@@ -22,26 +23,41 @@ class MainController extends MessageController
 
     private AmazonService $amazonService;
 
+    private BitlyAPI $bitlyAPI;
+
     public function __construct(
         Message            $message,
         UserController     $user,
         LoggerInterface    $logger,
         ProductsRepository $productsRepository,
         CacheService       $cacheService,
-        AmazonService      $amazonService
+        AmazonService      $amazonService,
+        BitlyAPI           $bitlyAPI
     )
     {
         parent::__construct($message, $user, $logger);
         $this->productsRepository = $productsRepository;
         $this->cacheService = $cacheService;
         $this->amazonService = $amazonService;
+        $this->bitlyAPI = $bitlyAPI;
     }
 
     public function processChatMessage(): void
     {
         $this->message->delete();
         if (isset($this->message->text) && $this->amazonService->validateUrl($this->message->text) && $this->productsRepository->getTotalProductTodayByUserId($this->user->getId()) < GeneralConfigurations::TOTAL_PRODUCTS_ALLOWED_PER_DAY) {
-            $this->processAmazonProduct();
+            preg_match_all('/\b(?:https?|ftp):\/\/\S+\b/', $this->message->text, $matches);
+            if (!empty($matches[0])) {
+                $url = $matches[0][0];
+                $asin = $this->amazonService->getASINFromURL($url);
+                if (!$this->productsRepository->checkAsinToday($asin)) {
+                    $this->processAmazonProduct($asin);
+                } else {
+                    $this->logger->info("Asin already processed today", $asin, $this->user->getId());
+                }
+            } else {
+                $this->logger->info("Not valid product", $this->message->text, $this->user->getId());
+            }
         } elseif ($this->message->new_chat_members !== null) {
             $welcome_text = $this->cacheService->getKey(GeneralConfigurations::WELCOME_MESSAGE_CACHE_KEY);
             foreach ($this->message->new_chat_members as $user) {
@@ -50,13 +66,16 @@ class MainController extends MessageController
         }
     }
 
-    private function processAmazonProduct(): void
+    private function processAmazonProduct(string $asin): void
     {
-        $product = $this->amazonService->getProductInfo($this->message->text);
+        $product = $this->amazonService->getProductInfo($asin);
         if ($product === null) {
-            $this->logger->info("Not valid product", $this->message->text, $this->user->getId());
+            $this->logger->info("Not valid product", $asin, $this->user->getId());
             return;
         }
+
+        $product->setUrl($this->bitlyAPI->getShortLink($product->getUrl()));
+
         if ($product->getPrice() > $product->getLowerPrice()) {
             $minhist = "";
         } else {
@@ -75,7 +94,7 @@ class MainController extends MessageController
             $price_template = get_string(LanguageCode::IT, 'price_template_1', str_replace(".", ",", $product->getPrice()));
         }
 
-        $productEntity = new ProductEntity(url: $product->getUrl(), sharedByUserId: $this->user->getId());
+        $productEntity = new ProductEntity(url: $product->getUrl(), sharedByUserId: $this->user->getId(), asin: $product->getAsin());
         $this->productsRepository->saveProduct($productEntity);
 
         $caption = get_string(LanguageCode::IT, 'product_template', $product->getTitle(), $price_template, $minhist, $product->getUrl(), $product->getUrl(), $this->user->getName());

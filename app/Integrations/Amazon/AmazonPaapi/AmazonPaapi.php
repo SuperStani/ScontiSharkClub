@@ -9,9 +9,9 @@ class AmazonPaapi implements AmazonInterface
 {
     private static string $commandPath = "python3 /scripts/ScontiSharkClub/app/Integrations/AmazonPaapi/amazonScraper.py";
 
-    public function getProductInfo(string $url): ?AmazonProduct
+    public function getProductInfo(string $asin): ?AmazonProduct
     {
-        $res = shell_exec(self::$commandPath . " \"$url\"");
+        $res = shell_exec(self::$commandPath . " \"$asin\"");
         if ($res == '')
             return null;
         $data = json_decode($res, true);
@@ -35,4 +35,9 @@ class AmazonPaapi implements AmazonInterface
 
     }
 
+    public function getASINFromURL(string $url): string
+    {
+        // TODO: Implement getASINFromURL() method.
+        return '';
+    }
 }

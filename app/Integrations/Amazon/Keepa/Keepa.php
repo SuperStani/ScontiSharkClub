@@ -32,9 +32,11 @@ class Keepa implements AmazonInterface
         $this->logger = $logger;
     }
 
-    public function getProductInfo(string $url): ?AmazonProduct
+    public function getProductInfo(string $asin): ?AmazonProduct
     {
-        $asin = $this->getASINFromURL($url);
+        if ($asin == '') {
+            return null;
+        }
         $r = Request::getProductRequest(
             domainID: AmazonLocale::IT,
             offers: 20,
@@ -48,29 +50,34 @@ class Keepa implements AmazonInterface
             $response = $this->api->sendRequest($r);
             $product = $response->products[0];
             $currentAmazonPrice = ProductAnalyzer::getLast($product->csv[CSVType::AMAZON], CSVTypeWrapper::getCSVTypeFromIndex(CSVType::AMAZON));
+            $p = ProductAnalyzer::getLowestAndHighest($product->csv[CSVType::MARKET_NEW], CSVTypeWrapper::getCSVTypeFromIndex(CSVType::AMAZON));
             if ($currentAmazonPrice === -1) {
-                TelegramClient::debug('Not available');
-                return null;
+                $currentAmazonPrice = ProductAnalyzer::getLast($product->csv[CSVType::MARKET_NEW], CSVTypeWrapper::getCSVTypeFromIndex(CSVType::MARKET_NEW));
+                if ($currentAmazonPrice === -1) {
+                    $this->logger->info("Product out of stock!", $asin, json_encode($product, JSON_PRETTY_PRINT));
+                    return null;
+                }
+                $p = ProductAnalyzer::getLowestAndHighest($product->csv[CSVType::AMAZON], CSVTypeWrapper::getCSVTypeFromIndex(CSVType::AMAZON));
             }
-            $p = ProductAnalyzer::getLowestAndHighest($product->csv[CSVType::AMAZON], CSVTypeWrapper::getCSVTypeFromIndex(CSVType::AMAZON));
-
+            $this->logger->debug("Product", $asin, json_encode($product, JSON_PRETTY_PRINT));
             $coupon = $product->coupon[0] ?? 0;
-            if($coupon !== 0) {
+            if ($coupon !== 0) {
                 if ($coupon < 0) {
                     $coupon *= -1;
-                    $coupon = $coupon / 100 * $currentAmazonPrice;
-                } else{
+                    $coupon = $coupon / 100 * ($currentAmazonPrice / 100);
+                } else {
                     $coupon /= 100;
                 }
             }
 
             return new AmazonProduct(
-                $product->title,
-                "https://www.amazon.it/dp/{$product->asin}/?tag=" . GeneralConfigurations::AMAZON_REF,
-                $currentAmazonPrice / 100 - $coupon,
-                $p[0] / 100,
-                $p[1] / 100,
-                "https://images-na.ssl-images-amazon.com/images/I/" . explode(",", $product->imagesCSV)[0]
+                title: $product->title,
+                url: "https://www.amazon.it/dp/{$product->asin}/?tag=" . GeneralConfigurations::AMAZON_REF,
+                price: number_format($currentAmazonPrice / 100 - $coupon, 2),
+                lowerPrice: number_format($p[0] / 100, 2),
+                highestPrice: number_format($coupon == 0 ? $p[1] / 100 : $currentAmazonPrice / 100, 2),
+                photo: "https://images-na.ssl-images-amazon.com/images/I/" . explode(",", $product->imagesCSV)[0],
+                asin: $asin,
             );
 
             //TelegramClient::debug($response);

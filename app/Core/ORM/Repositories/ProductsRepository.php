@@ -24,9 +24,16 @@ class ProductsRepository extends AbstractRepository
 
     public function saveProduct(ProductEntity $product): void
     {
-        $sql = "INSERT INTO " . self::$table . " SET url = ?, shared_by_user_id = ?";
-        $this->db->query($sql, $product->getUrl(), $product->getSharedByUserId());
+        $sql = "INSERT INTO " . self::$table . " SET url = ?, asin = ?, shared_by_user_id = ?";
+        $this->db->query($sql, $product->getUrl(), $product->getAsin(), $product->getSharedByUserId());
         $product->setId($this->db->getLastInsertId());
+    }
+
+    public function checkAsinToday(string $asin): bool
+    {
+        $sql = "SELECT COUNT(*) as tot FROM " . self::$table . " WHERE asin = ? AND DATE(datetime) = CURDATE()";
+        $res = $this->db->query($sql, $asin)->fetch()['tot'] ?? 0;
+        return (bool)$res;
     }
 
 

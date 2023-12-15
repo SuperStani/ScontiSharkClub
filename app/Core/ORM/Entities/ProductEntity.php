@@ -10,11 +10,14 @@ class ProductEntity extends AbstractEntity
     private string $url;
     private int $sharedByUserId;
 
-    public function __construct(string $url, int $sharedByUserId, ?int $id = null)
+    private string $asin;
+
+    public function __construct(string $url, int $sharedByUserId, string $asin, ?int $id = null)
     {
         $this->id = $id;
         $this->sharedByUserId = $sharedByUserId;
         $this->url = $url;
+        $this->asin = $asin;
     }
 
     public function getId(): ?int
@@ -47,5 +50,14 @@ class ProductEntity extends AbstractEntity
         $this->sharedByUserId = $sharedByUserId;
     }
 
+    public function getAsin(): string
+    {
+        return $this->asin;
+    }
+
+    public function setAsin(string $asin): void
+    {
+        $this->asin = $asin;
+    }
 
 }

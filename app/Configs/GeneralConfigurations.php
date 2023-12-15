@@ -17,13 +17,12 @@ interface GeneralConfigurations
         406343901
     ];
     public const DEFAULT_LANG = LanguageCode::IT;
-
     public const TOTAL_PRODUCTS_ALLOWED_PER_DAY = 10;
     public const WEBAPP_ACTIVE = false;
     public const RANKING_ADDING_TEXT_CACHE_KEY = 'RANKING_ADD';
     public const WELCOME_MESSAGE_CACHE_KEY = 'WELCOME_MESSAGE';
-
     public const KEEPA_API_ACCESS_KEY = "8a6ednbmffm7mm9d9snllhftd5gmffpj6li3qn5sr27gck0c0d8cjjbuct6g1vgh";
-
     public const AMAZON_REF = "scontisharkclub-21";
+    public const BITLY_TOKEN = "4adf5e7d47d0a9fe201bb2c19804bcc174db516d";
+    public const BITLY_GUID = "o_2l2g9a2tc5";
 }

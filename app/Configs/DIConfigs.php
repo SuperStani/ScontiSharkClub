@@ -10,8 +10,10 @@ use App\Core\ORM\DB;
 use App\Core\Services\Telegram\UpdateService;
 use App\Integrations\Amazon\AmazonInterface;
 use App\Integrations\Amazon\Keepa\Keepa;
+use App\Integrations\Bitly\BitlyAPI;
 use App\Integrations\Telegram\Enums\Update;
 use DI\ContainerBuilder;
+use GuzzleHttp\Client;
 use Keepa\KeepaAPI;
 use Psr\Container\ContainerInterface;
 use function DI\factory;
@@ -47,6 +49,14 @@ $conf = [
     AmazonInterface::class => factory(function (ContainerInterface $c) {
         //return $c->get(AmazonPaapi::class);
         return $c->get(Keepa::class);
+    }),
+    BitlyAPI::class => factory(function (ContainerInterface $c) {
+        return new BitlyAPI(
+            token: GeneralConfigurations::BITLY_TOKEN,
+            guid: GeneralConfigurations::BITLY_GUID,
+            http: $c->get(Client::class),
+            logger: $c->get(LoggerInterface::class)
+        );
     })
 ];
 

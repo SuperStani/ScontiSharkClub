@@ -25,8 +25,8 @@ class AmazonService
         return $this->amazon->validateUrl($url);
     }
 
-    public function extractAsin(string $url)
+    public function getASINFromURL(string $url): string
     {
-
+        return $this->amazon->getASINFromURL($url);
     }
 }
